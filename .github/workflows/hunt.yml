@@ -33,18 +33,7 @@ jobs:
           chmod 600 "$HOME/.oci/config"
           printf '%s' "${{ secrets.OCI_SSH_PUBLIC_KEY }}" > /tmp/ssh_key.pub
 
-      - name: Skip if instance already exists
-        id: check
-        run: |
-          COUNT=$(oci compute instance list \
-            --compartment-id "${{ secrets.OCI_TENANCY_OCID }}" \
-            --display-name mindflows-postiz \
-            --query "length(data[?\"lifecycle-state\" != 'TERMINATED'])" \
-            --raw-output)
-          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
-
       - name: Try to launch instance
-        if: steps.check.outputs.count == '0'
         id: launch
         run: |
           set +e
