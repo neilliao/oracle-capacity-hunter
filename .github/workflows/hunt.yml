@@ -74,12 +74,10 @@ jobs:
         if: steps.launch.outputs.success == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLIC_IP: ${{ steps.launch.outputs.public_ip }}
         run: |
-          gh issue create --repo "${{ github.repository }}" \
-            --title "VM 建立成功 - mindflows-postiz" \
-            --body "Public IP: ${{ steps.launch.outputs.public_ip }}
-
-SSH 登入: ssh -i ~/.ssh/oracle-mindflows ubuntu@${{ steps.launch.outputs.public_ip }}"
+          BODY=$(printf 'Public IP: %s\n\nSSH 登入: ssh -i ~/.ssh/oracle-mindflows ubuntu@%s' "$PUBLIC_IP" "$PUBLIC_IP")
+          gh issue create --repo "${{ github.repository }}" --title "VM 建立成功 - mindflows-postiz" --body "$BODY"
 
       - name: Disable this workflow after success
         if: steps.launch.outputs.success == 'true'
